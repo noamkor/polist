@@ -65,6 +65,86 @@ export function ExpiringInsurances({ items }: Props) {
     return days <= range;
   });
 
+  function handlePrint() {
+    const rangeLabel = RANGE_OPTIONS.find((o) => o.value === range)?.label || "";
+    const todayStr = new Intl.DateTimeFormat("he-IL", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }).format(new Date());
+
+    const rows = filtered
+      .map((ins) => {
+        const days = getDaysLeft(ins.endDate);
+        const daysText = days <= 0 ? "פג תוקף!" : `${days} ימים`;
+        const endDateStr = new Intl.DateTimeFormat("he-IL", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        }).format(new Date(ins.endDate));
+
+        return `<tr>
+          <td>${ins.clientName}</td>
+          <td>${categoryLabels[ins.category]}</td>
+          <td>${ins.assetLabel}</td>
+          <td>${ins.provider || "—"}</td>
+          <td>${ins.policyNumber || "—"}</td>
+          <td>${endDateStr}</td>
+          <td>${daysText}</td>
+        </tr>`;
+      })
+      .join("");
+
+    const html = `<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>ביטוחים שעומדים לפוג - ${rangeLabel}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, "Segoe UI", Tahoma, sans-serif; padding: 32px; color: #1e293b; }
+    h1 { font-size: 22px; margin-bottom: 4px; }
+    .subtitle { font-size: 14px; color: #64748b; margin-bottom: 20px; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th { background: #f1f5f9; font-weight: 700; text-align: right; padding: 10px 12px; border-bottom: 2px solid #cbd5e1; }
+    td { padding: 9px 12px; border-bottom: 1px solid #e2e8f0; text-align: right; }
+    tr:nth-child(even) { background: #f8fafc; }
+    .footer { margin-top: 24px; font-size: 12px; color: #94a3b8; text-align: center; }
+    @media print {
+      body { padding: 16px; }
+      .footer { position: fixed; bottom: 8px; left: 0; right: 0; }
+    }
+  </style>
+</head>
+<body>
+  <h1>ביטוחים שעומדים לפוג — ${rangeLabel}</h1>
+  <p class="subtitle">${todayStr} · ${filtered.length} רשומות</p>
+  <table>
+    <thead>
+      <tr>
+        <th>${labels.clientName}</th>
+        <th>${labels.insuranceType}</th>
+        <th>${labels.assetDetails}</th>
+        <th>${labels.provider}</th>
+        <th>${labels.policyNumber}</th>
+        <th>${labels.expiresOn}</th>
+        <th>${labels.daysLeft}</th>
+      </tr>
+    </thead>
+    <tbody>${rows}</tbody>
+  </table>
+  <p class="footer">פוליסט — ${todayStr}</p>
+</body>
+</html>`;
+
+    const printWindow = window.open("", "_blank");
+    if (printWindow) {
+      printWindow.document.write(html);
+      printWindow.document.close();
+      printWindow.onload = () => printWindow.print();
+    }
+  }
+
   async function handleRenew(ins: ExpiringInsurance) {
     setRenewingId(ins.id);
     const res = await fetch("/api/insurance/renew", {
@@ -103,20 +183,34 @@ export function ExpiringInsurances({ items }: Props) {
             </span>
           )}
         </div>
-        <div className="flex gap-1">
-          {RANGE_OPTIONS.map((opt) => (
+        <div className="flex items-center gap-2">
+          <div className="flex gap-1">
+            {RANGE_OPTIONS.map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => setRange(opt.value)}
+                className={`px-3 py-1.5 rounded-lg text-sm transition-colors cursor-pointer ${
+                  range === opt.value
+                    ? "bg-primary-600 text-white"
+                    : "bg-muted text-muted-foreground hover:bg-accent"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+          {filtered.length > 0 && (
             <button
-              key={opt.value}
-              onClick={() => setRange(opt.value)}
-              className={`px-3 py-1.5 rounded-lg text-sm transition-colors cursor-pointer ${
-                range === opt.value
-                  ? "bg-primary-600 text-white"
-                  : "bg-muted text-muted-foreground hover:bg-accent"
-              }`}
+              onClick={handlePrint}
+              className="px-3 py-1.5 rounded-lg text-sm bg-muted text-muted-foreground hover:bg-accent transition-colors cursor-pointer flex items-center gap-1.5"
+              title="הדפסה"
             >
-              {opt.label}
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18.25 7.034V3.375" />
+              </svg>
+              הדפסה
             </button>
-          ))}
+          )}
         </div>
       </div>
 
@@ -155,7 +249,7 @@ export function ExpiringInsurances({ items }: Props) {
                       </Link>
                     </td>
                     <td className="py-3">
-                      <span className="px-3 py-0.5 text-sm rounded-full bg-foreground/10 text-muted-foreground">
+                      <span className="inline-block w-16 text-center px-3 py-0.5 text-sm rounded-full bg-foreground/10 text-muted-foreground">
                         {categoryLabels[ins.category]}
                       </span>
                     </td>
