@@ -1,0 +1,210 @@
+export const labels = {
+  // App
+  appName: "פוליסט",
+  dashboard: "לוח בקרה",
+  login: "כניסה",
+  logout: "יציאה",
+  settings: "הגדרות",
+  backup: "גיבוי",
+
+  // Common
+  save: "שמירה",
+  cancel: "ביטול",
+  delete: "מחיקה",
+  edit: "עריכה",
+  create: "יצירה",
+  add: "הוספה",
+  search: "חיפוש",
+  filter: "סינון",
+  actions: "פעולות",
+  loading: "טוען...",
+  noResults: "לא נמצאו תוצאות",
+  confirmDelete: "האם למחוק?",
+  yes: "כן",
+  no: "לא",
+  back: "חזרה",
+  close: "סגירה",
+  upload: "העלאה",
+  download: "הורדה",
+  preview: "תצוגה מקדימה",
+  required: "שדה חובה",
+
+  // Auth
+  username: "שם משתמש",
+  password: "סיסמה",
+  loginButton: "כניסה למערכת",
+  loginError: "שם משתמש או סיסמה שגויים",
+
+  // Client
+  clients: "לקוחות",
+  client: "לקוח",
+  newClient: "לקוח חדש",
+  editClient: "עריכת לקוח",
+  firstName: "שם פרטי",
+  lastName: "שם משפחה",
+  idNumber: "תעודת זהות",
+  gender: "מגדר",
+  email: "דוא\"ל",
+  dateOfBirth: "תאריך לידה",
+  address: "כתובת",
+  notes: "הערות",
+  phoneNumbers: "מספרי טלפון",
+  phoneNumber: "מספר טלפון",
+  phoneLabel: "תיאור",
+  addPhone: "הוסף טלפון",
+  personalDocuments: "מסמכים אישיים",
+  driverLicense: "רישיון נהיגה",
+  idDocument: "תעודת זהות",
+  otherDocuments: "מסמכים נוספים",
+  replaceFile: "החלף קובץ",
+  uploadFile: "העלה קובץ",
+  noFileUploaded: "לא הועלה קובץ",
+
+  // Gender
+  male: "זכר",
+  female: "נקבה",
+  other: "אחר",
+
+  // Family
+  familyRelations: "קשרי משפחה",
+  addRelation: "הוסף קשר משפחתי",
+  relationType: "סוג קשר",
+  relatedClient: "לקוח קשור",
+  spouse: "בן/בת זוג",
+  parent: "הורה",
+  child: "ילד/ה",
+  sibling: "אח/אחות",
+
+  // Insurance categories
+  insurance: "ביטוח",
+  vehicles: "רכבים",
+  vehicle: "רכב",
+  homes: "דירות",
+  home: "דירה",
+  businesses: "עסקים",
+  business: "עסק",
+  health: "בריאות",
+  pension: "פנסיה",
+
+  // Vehicle
+  licensePlate: "מספר רכב",
+  manufacturer: "יצרן",
+  model: "דגם",
+  vehicleYear: "שנת ייצור",
+  newVehicle: "רכב חדש",
+  editVehicle: "עריכת רכב",
+
+  // Home
+  homeAddress: "כתובת הדירה",
+  newHome: "דירה חדשה",
+  editHome: "עריכת דירה",
+
+  // Business
+  businessName: "שם העסק",
+  businessAddress: "כתובת העסק",
+  newBusiness: "עסק חדש",
+  editBusiness: "עריכת עסק",
+
+  // Health & Pension
+  policyName: "שם הפוליסה",
+  provider: "חברת ביטוח",
+  newHealthPolicy: "פוליסת בריאות חדשה",
+  editHealthPolicy: "עריכת פוליסת בריאות",
+  newPensionPolicy: "פוליסת פנסיה חדשה",
+  editPensionPolicy: "עריכת פוליסת פנסיה",
+
+  // Insurance records
+  insuranceRecords: "רשומות ביטוח",
+  year: "שנה",
+  policyNumber: "מספר פוליסה",
+  startDate: "תאריך התחלה",
+  endDate: "תאריך סיום",
+  premium: "פרמיה",
+  addInsuranceYear: "הוסף שנת ביטוח",
+  editInsuranceYear: "עריכת שנת ביטוח",
+  deleteInsuranceYear: "מחיקת שנת ביטוח",
+  documents: "מסמכים",
+
+  // Backup
+  backupTitle: "גיבוי מערכת",
+  backupDescription: "הורדת גיבוי מלא של כל הלקוחות, הפוליסות והמסמכים",
+  downloadBackup: "הורד גיבוי",
+  backupInProgress: "יוצר גיבוי...",
+
+  // Settings
+  userManagement: "ניהול משתמשים",
+  changePassword: "שינוי סיסמה",
+  currentPassword: "סיסמה נוכחית",
+  newPassword: "סיסמה חדשה",
+  confirmPassword: "אישור סיסמה",
+
+  // Dashboard
+  totalClients: "סה\"כ לקוחות",
+  clientsByInsurance: "לקוחות לפי סוג ביטוח",
+  expiringInsurances: "ביטוחים שעומדים לפוג",
+  expiringThisMonth: "פג בתקופה",
+  days30: "30 יום",
+  days60: "60 יום",
+  days90: "90 יום",
+  clientName: "שם לקוח",
+  insuranceType: "סוג ביטוח",
+  assetDetails: "פרטי נכס",
+  expiresOn: "תאריך סיום",
+  daysLeft: "ימים שנותרו",
+  noExpiringInsurances: "אין ביטוחים שפגים בתקופה",
+  renew: "חידוש",
+  renewed: "חודש",
+  renewing: "מחדש...",
+  birthdaysThisMonth: "ימי הולדת קרובים",
+  noBirthdaysThisMonth: "אין ימי הולדת בחודש הנבחר",
+  birthdayDate: "תאריך לידה",
+
+  // Advisor
+  advisorTitle: "תובנות",
+  advisorAllGood: "הכל תקין! אין המלצות כרגע",
+  advisorRecommendations: "המלצות",
+  noInsuranceTitle: "לקוחות ללא ביטוחים",
+  noInsuranceDesc: "לקוחות שלא משויכים לאף נכס או פוליסה",
+  potentialRelationsTitle: "קשרים משפחתיים אפשריים",
+  potentialRelationsDesc: "לקוחות עם שם משפחה זהה ללא קשר משפחתי מוגדר",
+  missingContactTitle: "חסרים פרטי קשר",
+  missingContactDesc: "לקוחות ללא טלפון וללא דוא\"ל",
+  missingBirthdayTitle: "חסר תאריך לידה",
+  missingBirthdayDesc: "לא ניתן לעקוב אחר ימי הולדת",
+  assetsNoRecordsTitle: "נכסים ללא רשומות ביטוח",
+  assetsNoRecordsDesc: "נכסים שנוספו אך לא הוגדרו להם שנות ביטוח",
+  missingDatesTitle: "רשומות ביטוח ללא תאריכים",
+  missingDatesDesc: "רשומות ביטוח שלא הוגדרו להן תאריך התחלה או סיום",
+
+  // Roles
+  admin: "מנהל",
+  agent: "סוכן",
+  viewer: "צופה",
+} as const;
+
+export const categoryLabels: Record<string, string> = {
+  VEHICLE: "רכב",
+  HOME: "דירה",
+  BUSINESS: "עסק",
+  HEALTH: "בריאות",
+  PENSION: "פנסיה",
+};
+
+export const genderLabels: Record<string, string> = {
+  MALE: "זכר",
+  FEMALE: "נקבה",
+  OTHER: "אחר",
+};
+
+export const relationLabels: Record<string, string> = {
+  SPOUSE: "בן/בת זוג",
+  PARENT: "הורה",
+  CHILD: "ילד/ה",
+  SIBLING: "אח/אחות",
+};
+
+export const roleLabels: Record<string, string> = {
+  ADMIN: "מנהל",
+  AGENT: "סוכן",
+  VIEWER: "צופה",
+};

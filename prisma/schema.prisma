@@ -1,0 +1,291 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum FamilyRelationType {
+  SPOUSE
+  PARENT
+  CHILD
+  SIBLING
+}
+
+enum InsuranceCategory {
+  VEHICLE
+  HOME
+  BUSINESS
+  HEALTH
+  PENSION
+}
+
+enum UserRole {
+  ADMIN
+  AGENT
+  VIEWER
+}
+
+model User {
+  id             String   @id @default(cuid())
+  username       String   @unique
+  hashedPassword String
+  name           String
+  role           UserRole @default(AGENT)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Client {
+  id                String    @id @default(cuid())
+  firstName         String
+  lastName          String
+  idNumber          String?
+  gender            Gender?
+  email             String?
+  dateOfBirth       DateTime?
+  address           String?
+  notes             String?
+  driverLicensePath String?
+  idDocumentPath    String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  phoneNumbers    PhoneNumber[]
+  familyRelationsA FamilyRelation[] @relation("FamilyRelationA")
+  familyRelationsB FamilyRelation[] @relation("FamilyRelationB")
+  vehicles        Vehicle[]
+  homes           Home[]
+  businesses      Business[]
+  healthPolicies  HealthPolicy[]
+  pensionPolicies PensionPolicy[]
+  documents       Document[]
+}
+
+model PhoneNumber {
+  id       String @id @default(cuid())
+  number   String
+  label    String @default("נייד")
+  clientId String
+  client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([clientId])
+}
+
+model FamilyRelation {
+  id           String             @id @default(cuid())
+  clientAId    String
+  clientBId    String
+  relationType FamilyRelationType
+  clientA      Client             @relation("FamilyRelationA", fields: [clientAId], references: [id], onDelete: Cascade)
+  clientB      Client             @relation("FamilyRelationB", fields: [clientBId], references: [id], onDelete: Cascade)
+  createdAt    DateTime           @default(now())
+
+  @@unique([clientAId, clientBId])
+  @@index([clientBId])
+}
+
+model Vehicle {
+  id           String             @id @default(cuid())
+  licensePlate String
+  manufacturer String?
+  model        String?
+  year         Int?
+  clientId     String
+  client       Client             @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  insurance    VehicleInsurance[]
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  @@index([clientId])
+}
+
+model VehicleInsurance {
+  id        String     @id @default(cuid())
+  year      Int
+  provider  String?
+  policyNumber String?
+  startDate DateTime?
+  endDate   DateTime?
+  premium   Float?
+  notes     String?
+  vehicleId String
+  vehicle   Vehicle    @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  documents Document[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@unique([vehicleId, year])
+  @@index([vehicleId])
+}
+
+model Home {
+  id        String          @id @default(cuid())
+  address   String
+  notes     String?
+  clientId  String
+  client    Client          @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  insurance HomeInsurance[]
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  @@index([clientId])
+}
+
+model HomeInsurance {
+  id        String     @id @default(cuid())
+  year      Int
+  provider  String?
+  policyNumber String?
+  startDate DateTime?
+  endDate   DateTime?
+  premium   Float?
+  notes     String?
+  homeId    String
+  home      Home       @relation(fields: [homeId], references: [id], onDelete: Cascade)
+  documents Document[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@unique([homeId, year])
+  @@index([homeId])
+}
+
+model Business {
+  id           String              @id @default(cuid())
+  businessName String
+  address      String?
+  notes        String?
+  clientId     String
+  client       Client              @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  insurance    BusinessInsurance[]
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  @@index([clientId])
+}
+
+model BusinessInsurance {
+  id        String     @id @default(cuid())
+  year      Int
+  provider  String?
+  policyNumber String?
+  startDate DateTime?
+  endDate   DateTime?
+  premium   Float?
+  notes     String?
+  businessId String
+  business   Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  documents  Document[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@unique([businessId, year])
+  @@index([businessId])
+}
+
+model HealthPolicy {
+  id         String            @id @default(cuid())
+  policyName String
+  provider   String?
+  notes      String?
+  clientId   String
+  client     Client            @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  insurance  HealthInsurance[]
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+
+  @@index([clientId])
+}
+
+model HealthInsurance {
+  id             String       @id @default(cuid())
+  year           Int
+  policyNumber   String?
+  startDate      DateTime?
+  endDate        DateTime?
+  premium        Float?
+  notes          String?
+  healthPolicyId String
+  healthPolicy   HealthPolicy @relation(fields: [healthPolicyId], references: [id], onDelete: Cascade)
+  documents      Document[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@unique([healthPolicyId, year])
+  @@index([healthPolicyId])
+}
+
+model PensionPolicy {
+  id         String             @id @default(cuid())
+  policyName String
+  provider   String?
+  notes      String?
+  clientId   String
+  client     Client             @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  insurance  PensionInsurance[]
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+
+  @@index([clientId])
+}
+
+model PensionInsurance {
+  id              String        @id @default(cuid())
+  year            Int
+  policyNumber    String?
+  startDate       DateTime?
+  endDate         DateTime?
+  premium         Float?
+  notes           String?
+  pensionPolicyId String
+  pensionPolicy   PensionPolicy @relation(fields: [pensionPolicyId], references: [id], onDelete: Cascade)
+  documents       Document[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@unique([pensionPolicyId, year])
+  @@index([pensionPolicyId])
+}
+
+model Document {
+  id              String            @id @default(cuid())
+  fileName        String
+  storagePath     String
+  mimeType        String
+  fileSize        Int
+  category        InsuranceCategory?
+  personalDocType String?           // "ID" | "DRIVER_LICENSE" | null (other). Only used when clientId is set.
+
+  // Polymorphic FK - exactly one should be non-null
+  clientId           String?
+  client             Client?            @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  vehicleInsuranceId String?
+  vehicleInsurance   VehicleInsurance?  @relation(fields: [vehicleInsuranceId], references: [id], onDelete: Cascade)
+  homeInsuranceId    String?
+  homeInsurance      HomeInsurance?     @relation(fields: [homeInsuranceId], references: [id], onDelete: Cascade)
+  businessInsuranceId String?
+  businessInsurance   BusinessInsurance? @relation(fields: [businessInsuranceId], references: [id], onDelete: Cascade)
+  healthInsuranceId  String?
+  healthInsurance    HealthInsurance?   @relation(fields: [healthInsuranceId], references: [id], onDelete: Cascade)
+  pensionInsuranceId String?
+  pensionInsurance   PensionInsurance?  @relation(fields: [pensionInsuranceId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([clientId])
+  @@index([vehicleInsuranceId])
+  @@index([homeInsuranceId])
+  @@index([businessInsuranceId])
+  @@index([healthInsuranceId])
+  @@index([pensionInsuranceId])
+}
