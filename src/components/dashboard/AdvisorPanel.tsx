@@ -178,11 +178,9 @@ export function AdvisorPanel({
 
   if (insights.length === 0) {
     return (
-      <div className="bg-card rounded-xl p-6 shadow-sm border border-border-light mb-6">
-        <h2 className="text-lg font-bold mb-2">{labels.advisorTitle}</h2>
-        <p className="text-center py-6 text-muted-foreground bg-muted rounded-lg">
-          {labels.advisorAllGood}
-        </p>
+      <div className="bg-card rounded-xl p-6 shadow-sm border border-border-light mb-6 flex items-center gap-3">
+        <h2 className="text-lg font-bold">{labels.advisorTitle}</h2>
+        <span className="text-muted-foreground">{labels.advisorAllGood}</span>
       </div>
     );
   }

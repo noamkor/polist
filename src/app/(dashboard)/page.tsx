@@ -12,10 +12,13 @@ export default async function DashboardPage() {
 
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const in90Days = new Date(today.getTime() + 90 * 24 * 60 * 60 * 1000);
 
   const currentMonth = now.getMonth() + 1; // 1-based
   const nextMonth = currentMonth === 12 ? 1 : currentMonth + 1;
+
+  // End of next month for expiring insurance queries
+  const nextMonthYear = currentMonth === 12 ? now.getFullYear() + 1 : now.getFullYear();
+  const endOfNextMonth = new Date(nextMonthYear, nextMonth, 0, 23, 59, 59, 999);
 
   const [
     clientCount,
@@ -62,23 +65,23 @@ export default async function DashboardPage() {
         EXTRACT(DAY FROM "dateOfBirth") ASC
     `,
     prisma.vehicleInsurance.findMany({
-      where: { endDate: { gte: today, lte: in90Days } },
+      where: { endDate: { gte: today, lte: endOfNextMonth } },
       include: { vehicle: { include: { client: true } } },
     }),
     prisma.homeInsurance.findMany({
-      where: { endDate: { gte: today, lte: in90Days } },
+      where: { endDate: { gte: today, lte: endOfNextMonth } },
       include: { home: { include: { client: true } } },
     }),
     prisma.businessInsurance.findMany({
-      where: { endDate: { gte: today, lte: in90Days } },
+      where: { endDate: { gte: today, lte: endOfNextMonth } },
       include: { business: { include: { client: true } } },
     }),
     prisma.healthInsurance.findMany({
-      where: { endDate: { gte: today, lte: in90Days } },
+      where: { endDate: { gte: today, lte: endOfNextMonth } },
       include: { healthPolicy: { include: { client: true } } },
     }),
     prisma.pensionInsurance.findMany({
-      where: { endDate: { gte: today, lte: in90Days } },
+      where: { endDate: { gte: today, lte: endOfNextMonth } },
       include: { pensionPolicy: { include: { client: true } } },
     }),
     // Advisor: clients with no assets/policies at all
@@ -192,6 +195,7 @@ export default async function DashboardPage() {
       id: r.id,
       year: r.year,
       endDate: r.endDate!.toISOString(),
+      endMonth: r.endDate!.getMonth() + 1,
       provider: r.provider,
       policyNumber: r.policyNumber,
       premium: r.premium,
@@ -205,6 +209,7 @@ export default async function DashboardPage() {
       id: r.id,
       year: r.year,
       endDate: r.endDate!.toISOString(),
+      endMonth: r.endDate!.getMonth() + 1,
       provider: r.provider,
       policyNumber: r.policyNumber,
       premium: r.premium,
@@ -218,6 +223,7 @@ export default async function DashboardPage() {
       id: r.id,
       year: r.year,
       endDate: r.endDate!.toISOString(),
+      endMonth: r.endDate!.getMonth() + 1,
       provider: r.provider,
       policyNumber: r.policyNumber,
       premium: r.premium,
@@ -231,6 +237,7 @@ export default async function DashboardPage() {
       id: r.id,
       year: r.year,
       endDate: r.endDate!.toISOString(),
+      endMonth: r.endDate!.getMonth() + 1,
       provider: r.healthPolicy.provider,
       policyNumber: r.policyNumber,
       premium: r.premium,
@@ -244,6 +251,7 @@ export default async function DashboardPage() {
       id: r.id,
       year: r.year,
       endDate: r.endDate!.toISOString(),
+      endMonth: r.endDate!.getMonth() + 1,
       provider: r.pensionPolicy.provider,
       policyNumber: r.policyNumber,
       premium: r.premium,
@@ -254,6 +262,52 @@ export default async function DashboardPage() {
       clientId: r.pensionPolicy.client.id,
     })),
   ].sort((a, b) => new Date(a.endDate).getTime() - new Date(b.endDate).getTime());
+
+  // Check which expiring insurances already have a next-year record (already renewed)
+  const renewalChecks = await Promise.all([
+    expiringVehicle.length > 0
+      ? prisma.vehicleInsurance.findMany({
+          where: { OR: expiringVehicle.map((r) => ({ vehicleId: r.vehicleId, year: r.year + 1 })) },
+          select: { vehicleId: true, year: true },
+        })
+      : [],
+    expiringHome.length > 0
+      ? prisma.homeInsurance.findMany({
+          where: { OR: expiringHome.map((r) => ({ homeId: r.homeId, year: r.year + 1 })) },
+          select: { homeId: true, year: true },
+        })
+      : [],
+    expiringBusiness.length > 0
+      ? prisma.businessInsurance.findMany({
+          where: { OR: expiringBusiness.map((r) => ({ businessId: r.businessId, year: r.year + 1 })) },
+          select: { businessId: true, year: true },
+        })
+      : [],
+    expiringHealth.length > 0
+      ? prisma.healthInsurance.findMany({
+          where: { OR: expiringHealth.map((r) => ({ healthPolicyId: r.healthPolicyId, year: r.year + 1 })) },
+          select: { healthPolicyId: true, year: true },
+        })
+      : [],
+    expiringPension.length > 0
+      ? prisma.pensionInsurance.findMany({
+          where: { OR: expiringPension.map((r) => ({ pensionPolicyId: r.pensionPolicyId, year: r.year + 1 })) },
+          select: { pensionPolicyId: true, year: true },
+        })
+      : [],
+  ]);
+
+  const renewedSet = new Set<string>();
+  for (const r of renewalChecks[0]) renewedSet.add(`VEHICLE:${r.vehicleId}:${r.year}`);
+  for (const r of renewalChecks[1]) renewedSet.add(`HOME:${r.homeId}:${r.year}`);
+  for (const r of renewalChecks[2]) renewedSet.add(`BUSINESS:${r.businessId}:${r.year}`);
+  for (const r of renewalChecks[3]) renewedSet.add(`HEALTH:${r.healthPolicyId}:${r.year}`);
+  for (const r of renewalChecks[4]) renewedSet.add(`PENSION:${r.pensionPolicyId}:${r.year}`);
+
+  const expiringWithRenewed = expiring.map((item) => ({
+    ...item,
+    renewed: renewedSet.has(`${item.category}:${item.assetId}:${item.year + 1}`),
+  }));
 
   const monthNames = new Intl.DateTimeFormat("he-IL", { month: "long" });
   const currentMonthLabel = monthNames.format(new Date(now.getFullYear(), now.getMonth()));
@@ -373,7 +427,13 @@ export default async function DashboardPage() {
         missingDatesRecords={missingDatesRecords}
       />
 
-      <ExpiringInsurances items={expiring} />
+      <ExpiringInsurances
+        items={expiringWithRenewed}
+        currentMonth={currentMonth}
+        nextMonth={nextMonth}
+        currentMonthLabel={currentMonthLabel}
+        nextMonthLabel={nextMonthLabel}
+      />
 
       <BirthdaysList
         items={birthdayItems}

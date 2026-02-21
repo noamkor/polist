@@ -11,6 +11,7 @@ interface ExpiringInsurance {
   id: string;
   year: number;
   endDate: string;
+  endMonth: number;
   provider: string | null;
   policyNumber: string | null;
   premium: number | null;
@@ -19,17 +20,16 @@ interface ExpiringInsurance {
   assetLabel: string;
   clientName: string;
   clientId: string;
+  renewed: boolean;
 }
 
 interface Props {
   items: ExpiringInsurance[];
+  currentMonth: number;
+  nextMonth: number;
+  currentMonthLabel: string;
+  nextMonthLabel: string;
 }
-
-const RANGE_OPTIONS = [
-  { value: 30, label: labels.days30 },
-  { value: 60, label: labels.days60 },
-  { value: 90, label: labels.days90 },
-];
 
 function getDaysLeft(endDate: string): number {
   const today = new Date();
@@ -53,20 +53,22 @@ function getDotPulse(daysLeft: number): string {
   return "";
 }
 
-export function ExpiringInsurances({ items }: Props) {
+export function ExpiringInsurances({ items, currentMonth, nextMonth, currentMonthLabel, nextMonthLabel }: Props) {
   const { toast } = useToast();
   const router = useRouter();
-  const [range, setRange] = useState(30);
+  const [tab, setTab] = useState<number>(currentMonth);
   const [renewingId, setRenewingId] = useState<string | null>(null);
   const [renewedIds, setRenewedIds] = useState<Set<string>>(new Set());
 
-  const filtered = items.filter((ins) => {
-    const days = getDaysLeft(ins.endDate);
-    return days <= range;
-  });
+  const tabs = [
+    { value: currentMonth, label: currentMonthLabel },
+    { value: nextMonth, label: nextMonthLabel },
+  ];
+
+  const filtered = items.filter((ins) => ins.endMonth === tab);
 
   function handlePrint() {
-    const rangeLabel = RANGE_OPTIONS.find((o) => o.value === range)?.label || "";
+    const tabLabel = tabs.find((t) => t.value === tab)?.label || "";
     const todayStr = new Intl.DateTimeFormat("he-IL", {
       year: "numeric",
       month: "long",
@@ -83,6 +85,12 @@ export function ExpiringInsurances({ items }: Props) {
           day: "2-digit",
         }).format(new Date(ins.endDate));
 
+        const isRenewed = ins.renewed || renewedIds.has(ins.id);
+        const statusText = isRenewed ? "חודש" : "לא חודש";
+        const statusStyle = isRenewed
+          ? "color: #16a34a; font-weight: 600;"
+          : "color: #dc2626; font-weight: 600;";
+
         return `<tr>
           <td>${ins.clientName}</td>
           <td>${categoryLabels[ins.category]}</td>
@@ -91,6 +99,7 @@ export function ExpiringInsurances({ items }: Props) {
           <td>${ins.policyNumber || "—"}</td>
           <td>${endDateStr}</td>
           <td>${daysText}</td>
+          <td style="${statusStyle}">${statusText}</td>
         </tr>`;
       })
       .join("");
@@ -99,7 +108,7 @@ export function ExpiringInsurances({ items }: Props) {
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>ביטוחים שעומדים לפוג - ${rangeLabel}</title>
+  <title>ביטוחים שפגים — ${tabLabel}</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: Arial, "Segoe UI", Tahoma, sans-serif; padding: 32px; color: #1e293b; }
@@ -117,7 +126,7 @@ export function ExpiringInsurances({ items }: Props) {
   </style>
 </head>
 <body>
-  <h1>ביטוחים שעומדים לפוג — ${rangeLabel}</h1>
+  <h1>ביטוחים שפגים — ${tabLabel}</h1>
   <p class="subtitle">${todayStr} · ${filtered.length} רשומות</p>
   <table>
     <thead>
@@ -129,6 +138,7 @@ export function ExpiringInsurances({ items }: Props) {
         <th>${labels.policyNumber}</th>
         <th>${labels.expiresOn}</th>
         <th>${labels.daysLeft}</th>
+        <th>סטטוס</th>
       </tr>
     </thead>
     <tbody>${rows}</tbody>
@@ -162,7 +172,12 @@ export function ExpiringInsurances({ items }: Props) {
     });
 
     if (res.ok) {
-      toast(`ביטוח חודש לשנת ${ins.year + 1}`);
+      const data = await res.json();
+      if (data.alreadyRenewed) {
+        toast(`ביטוח כבר חודש לשנת ${ins.year + 1}`);
+      } else {
+        toast(`ביטוח חודש לשנת ${ins.year + 1}`);
+      }
       setRenewedIds((prev) => new Set(prev).add(ins.id));
       router.refresh();
     } else {
@@ -179,23 +194,23 @@ export function ExpiringInsurances({ items }: Props) {
           <h2 className="text-lg font-bold">{labels.expiringInsurances}</h2>
           {filtered.length > 0 && (
             <span className="text-sm bg-red-500/15 text-red-600 px-2 py-0.5 rounded-full font-medium">
-              {filtered.length} {labels.expiringThisMonth}
+              {filtered.length}
             </span>
           )}
         </div>
         <div className="flex items-center gap-2">
           <div className="flex gap-1">
-            {RANGE_OPTIONS.map((opt) => (
+            {tabs.map((t) => (
               <button
-                key={opt.value}
-                onClick={() => setRange(opt.value)}
+                key={t.value}
+                onClick={() => setTab(t.value)}
                 className={`px-3 py-1.5 rounded-lg text-sm transition-colors cursor-pointer ${
-                  range === opt.value
+                  tab === t.value
                     ? "bg-primary-600 text-white"
                     : "bg-muted text-muted-foreground hover:bg-accent"
                 }`}
               >
-                {opt.label}
+                {t.label}
               </button>
             ))}
           </div>
@@ -236,7 +251,7 @@ export function ExpiringInsurances({ items }: Props) {
             <tbody>
               {filtered.map((ins) => {
                 const days = getDaysLeft(ins.endDate);
-                const isRenewed = renewedIds.has(ins.id);
+                const isRenewed = ins.renewed || renewedIds.has(ins.id);
                 const isRenewing = renewingId === ins.id;
                 return (
                   <tr key={ins.id} className="border-b border-border-light hover:bg-accent transition-colors">
@@ -262,16 +277,18 @@ export function ExpiringInsurances({ items }: Props) {
                       </span>
                     </td>
                     <td className="py-3">
-                      {isRenewed ? (
-                        <span className="text-sm text-green-600 font-medium">{labels.renewed}</span>
-                      ) : (
-                        <button
-                          onClick={() => handleRenew(ins)}
-                          disabled={isRenewing}
-                          className="text-sm text-primary-600 hover:underline font-medium disabled:opacity-50 cursor-pointer"
-                        >
-                          {isRenewing ? labels.renewing : labels.renew}
-                        </button>
+                      {tab === currentMonth && (
+                        isRenewed ? (
+                          <span className="text-sm text-green-600 font-medium">{labels.renewed}</span>
+                        ) : (
+                          <button
+                            onClick={() => handleRenew(ins)}
+                            disabled={isRenewing}
+                            className="text-sm text-primary-600 hover:underline font-medium disabled:opacity-50 cursor-pointer"
+                          >
+                            {isRenewing ? labels.renewing : labels.renew}
+                          </button>
+                        )
                       )}
                     </td>
                   </tr>

@@ -50,7 +50,7 @@ export function Sidebar() {
   return (
     <aside className="w-64 bg-card border-e border-border min-h-screen flex flex-col">
       <div className="h-16 px-6 flex items-center border-b border-border">
-        <Link href="/" className="text-2xl font-bold text-primary-700">
+        <Link href="/" className="text-2xl font-bold text-foreground">
           {labels.appName}
         </Link>
       </div>

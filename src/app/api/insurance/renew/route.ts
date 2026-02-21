@@ -30,9 +30,8 @@ export async function POST(request: NextRequest) {
     newEndDate.setDate(newEndDate.getDate() - 1);
   }
 
-  const data = {
+  const baseData = {
     year: newYear,
-    provider: provider || null,
     policyNumber: policyNumber || null,
     premium: premium || null,
     startDate: newStartDate,
@@ -40,32 +39,35 @@ export async function POST(request: NextRequest) {
     notes: null,
   };
 
+  // Health & Pension don't have a provider field — provider lives on the parent policy
+  const dataWithProvider = { ...baseData, provider: provider || null };
+
   try {
     let record;
     switch (category) {
       case "VEHICLE":
         record = await prisma.vehicleInsurance.create({
-          data: { ...data, vehicleId: assetId },
+          data: { ...dataWithProvider, vehicleId: assetId },
         });
         break;
       case "HOME":
         record = await prisma.homeInsurance.create({
-          data: { ...data, homeId: assetId },
+          data: { ...dataWithProvider, homeId: assetId },
         });
         break;
       case "BUSINESS":
         record = await prisma.businessInsurance.create({
-          data: { ...data, businessId: assetId },
+          data: { ...dataWithProvider, businessId: assetId },
         });
         break;
       case "HEALTH":
         record = await prisma.healthInsurance.create({
-          data: { ...data, healthPolicyId: assetId },
+          data: { ...baseData, healthPolicyId: assetId },
         });
         break;
       case "PENSION":
         record = await prisma.pensionInsurance.create({
-          data: { ...data, pensionPolicyId: assetId },
+          data: { ...baseData, pensionPolicyId: assetId },
         });
         break;
       default:
@@ -74,9 +76,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(record, { status: 201 });
   } catch (error: any) {
-    // Unique constraint violation - year already exists for this asset
+    // Unique constraint violation - year already exists, meaning already renewed
     if (error.code === "P2002") {
-      return NextResponse.json({ error: "שנת ביטוח זו כבר קיימת" }, { status: 409 });
+      return NextResponse.json({ alreadyRenewed: true }, { status: 200 });
     }
     throw error;
   }
