@@ -29,9 +29,11 @@ function formatFileSize(bytes: number) {
 function DocumentRow({
   doc,
   onDelete,
+  onReplace,
 }: {
   doc: Document;
   onDelete: (id: string) => void;
+  onReplace?: () => void;
 }) {
   return (
     <div className="flex items-center justify-between py-2 px-3 bg-muted rounded-lg">
@@ -40,6 +42,14 @@ function DocumentRow({
         <span className="text-sm text-secondary-foreground">{formatFileSize(doc.fileSize)}</span>
       </div>
       <div className="flex gap-1">
+        {onReplace && (
+          <button
+            onClick={onReplace}
+            className="text-sm text-primary-600 hover:underline px-2 py-1"
+          >
+            {labels.replaceFile}
+          </button>
+        )}
         <a
           href={`/api/documents/${doc.id}/preview`}
           target="_blank"
@@ -96,18 +106,9 @@ function SingleFileSlot({
       onDragLeave={() => setDragOver(false)}
       onDrop={handleDrop}
     >
-      <h4 className="text-sm font-medium text-foreground mb-2">{label}</h4>
+      <h4 className="text-sm font-bold text-foreground mb-2 -mx-4 -mt-4 px-4 py-2 rounded-t-lg bg-foreground/5">{label}</h4>
       {doc ? (
-        <div className="space-y-2">
-          <DocumentRow doc={doc} onDelete={onDelete} />
-          <button
-            onClick={() => inputRef.current?.click()}
-            className="text-sm text-primary-600 hover:underline"
-            disabled={uploading}
-          >
-            {labels.replaceFile}
-          </button>
-        </div>
+        <DocumentRow doc={doc} onDelete={onDelete} onReplace={() => inputRef.current?.click()} />
       ) : (
         <div
           onClick={() => inputRef.current?.click()}
@@ -254,7 +255,7 @@ export function PersonalDocuments({ clientId }: Props) {
 
       {/* Other personal documents - unlimited */}
       <div className="border border-border rounded-lg p-4">
-        <h4 className="text-sm font-medium text-foreground mb-2">{labels.otherDocuments}</h4>
+        <h4 className="text-sm font-bold text-foreground mb-2 -mx-4 -mt-4 px-4 py-2 rounded-t-lg bg-foreground/5">{labels.otherDocuments}</h4>
 
         {otherDocs.length > 0 && (
           <div className="space-y-2 mb-4">

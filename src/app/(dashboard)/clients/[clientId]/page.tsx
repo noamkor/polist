@@ -140,7 +140,7 @@ export default async function ClientDetailPage({
           >
             <div className="flex items-center justify-between">
               <h3 className="font-medium">{section.label}</h3>
-              <span className={`px-3 py-0.5 rounded-full text-sm font-medium ${
+              <span className={`w-7 h-7 rounded-full text-sm font-medium inline-flex items-center justify-center ${
                 section.count > 0
                   ? "bg-primary-500/15 text-primary-600"
                   : "bg-foreground/10 text-muted-foreground"
