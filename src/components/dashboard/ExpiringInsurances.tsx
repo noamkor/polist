@@ -193,7 +193,7 @@ export function ExpiringInsurances({ items, currentMonth, nextMonth, currentMont
         <div className="flex items-center gap-3">
           <h2 className="text-lg font-bold">{labels.expiringInsurances}</h2>
           {filtered.length > 0 && (
-            <span className="text-sm bg-red-500/15 text-red-600 px-2 py-0.5 rounded-full font-medium">
+            <span className="text-sm bg-red-900 text-white w-6 h-6 rounded-full font-bold inline-flex items-center justify-center">
               {filtered.length}
             </span>
           )}

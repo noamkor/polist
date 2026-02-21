@@ -11,6 +11,7 @@ interface BirthdayClient {
   lastName: string;
   dateOfBirth: string;
   birthMonth: number;
+  gender: string | null;
 }
 
 interface Props {
@@ -34,13 +35,15 @@ export function BirthdaysList({ items, currentMonth, nextMonth, currentMonthLabe
 
   return (
     <div className="bg-card rounded-xl p-6 shadow-sm border border-border-light">
-      <div className="flex items-center justify-between mb-4">
+      <div className={`flex items-center justify-between ${filtered.length > 0 ? "mb-4" : ""}`}>
         <div className="flex items-center gap-3">
           <h2 className="text-lg font-bold">{labels.birthdaysThisMonth}</h2>
-          {filtered.length > 0 && (
+          {filtered.length > 0 ? (
             <span className="text-sm bg-purple-500/15 text-purple-600 px-2 py-0.5 rounded-full font-medium">
               {filtered.length}
             </span>
+          ) : (
+            <span className="text-muted-foreground">{labels.noBirthdaysThisMonth}</span>
           )}
         </div>
         <div className="flex gap-1">
@@ -60,12 +63,8 @@ export function BirthdaysList({ items, currentMonth, nextMonth, currentMonthLabe
         </div>
       </div>
 
-      {filtered.length === 0 ? (
-        <div className="text-center py-8 text-muted-foreground bg-muted rounded-lg">
-          {labels.noBirthdaysThisMonth}
-        </div>
-      ) : (
-        <div className="space-y-2">
+      {filtered.length > 0 && (
+        <div className="space-y-3">
           {filtered.map((client) => {
             const dob = new Date(client.dateOfBirth);
             const birthdayThisYear = new Date(now.getFullYear(), dob.getMonth(), dob.getDate());
@@ -77,20 +76,26 @@ export function BirthdaysList({ items, currentMonth, nextMonth, currentMonthLabe
             return (
               <div
                 key={client.id}
-                className={`flex items-center gap-4 py-1.5 px-3 rounded-lg ${isToday ? "bg-purple-500/10 border border-purple-500/30" : "bg-muted"}`}
+                className={`flex items-center gap-3 py-3 px-4 rounded-lg ${isToday ? "bg-purple-500/10 border border-purple-500/30" : "bg-muted"}`}
               >
-                <div className="flex items-center gap-3">
-                  <Link href={`/clients/${client.id}`} className="text-primary-600 hover:underline font-medium">
-                    {client.firstName} {client.lastName}
-                  </Link>
-                  <span className="text-sm text-muted-foreground">(גיל {age})</span>
-                </div>
-                <div className="flex items-center gap-4">
-                  <span className="text-sm text-muted-foreground">{formatDate(client.dateOfBirth)}</span>
-                  {isToday && <span className="text-sm font-bold text-purple-600">היום!</span>}
-                  {isPassed && <span className="text-sm text-muted-foreground">התאריך עבר</span>}
-                  {!isToday && !isPassed && <span className="text-sm text-purple-600">בעוד {diffDays} ימים, גיל {age + 1}</span>}
-                </div>
+                <Link href={`/clients/${client.id}`} className="text-primary-600 hover:underline font-medium">
+                  {client.firstName} {client.lastName}
+                </Link>
+                {isPassed && (
+                  <span className="text-base text-muted-foreground">
+                    {client.gender === "FEMALE" ? "חגגה" : "חגג"} {age} ב- {formatDate(birthdayThisYear)}
+                  </span>
+                )}
+                {isToday && (
+                  <span className="text-base font-bold text-fuchsia-400">
+                    {client.gender === "FEMALE" ? "חוגגת" : "חוגג"} {age} היום! {formatDate(birthdayThisYear)}
+                  </span>
+                )}
+                {!isToday && !isPassed && (
+                  <span className="text-base text-muted-foreground">
+                    {client.gender === "FEMALE" ? "תחגוג" : "יחגוג"} {age + 1} ב- {formatDate(birthdayThisYear)}, בעוד {diffDays} ימים
+                  </span>
+                )}
               </div>
             );
           })}

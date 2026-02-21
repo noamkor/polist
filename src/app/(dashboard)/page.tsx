@@ -55,8 +55,8 @@ export default async function DashboardPage() {
     prisma.client.count({ where: { businesses: { some: {} } } }),
     prisma.client.count({ where: { healthPolicies: { some: {} } } }),
     prisma.client.count({ where: { pensionPolicies: { some: {} } } }),
-    prisma.$queryRaw<Array<{ id: string; firstName: string; lastName: string; dateOfBirth: Date }>>`
-      SELECT id, "firstName", "lastName", "dateOfBirth"
+    prisma.$queryRaw<Array<{ id: string; firstName: string; lastName: string; dateOfBirth: Date; gender: string | null }>>`
+      SELECT id, "firstName", "lastName", "dateOfBirth", "gender"
       FROM "Client"
       WHERE "dateOfBirth" IS NOT NULL
         AND EXTRACT(MONTH FROM "dateOfBirth") IN (${currentMonth}, ${nextMonth})
@@ -319,6 +319,7 @@ export default async function DashboardPage() {
     lastName: c.lastName,
     dateOfBirth: c.dateOfBirth.toISOString(),
     birthMonth: new Date(c.dateOfBirth).getMonth() + 1,
+    gender: c.gender,
   }));
 
   // Build uninsured assets list

@@ -161,10 +161,10 @@ export default async function ClientDetailPage({
       {familyRelations.length > 0 && (
         <div className="bg-card rounded-xl p-6 shadow-sm border border-border-light">
           <h3 className="font-bold mb-3">{labels.familyRelations}</h3>
-          <div className="space-y-2">
+          <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 items-center">
             {familyRelations.map((rel) => (
-              <div key={rel.id} className="flex items-center gap-3">
-                <span className="px-3 py-0.5 text-sm rounded-full bg-foreground/10 text-muted-foreground">
+              <div key={rel.id} className="contents">
+                <span className="inline-block w-24 text-center px-3 py-0.5 text-sm rounded-full bg-foreground/10 text-muted-foreground">
                   {relationLabels[rel.relationType]}
                 </span>
                 <Link
