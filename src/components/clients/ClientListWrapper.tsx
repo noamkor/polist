@@ -176,9 +176,12 @@ export function ClientListWrapper() {
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); setDeleteId(client.id); }}>
-                        <span className="text-danger-600">{labels.delete}</span>
-                      </Button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setDeleteId(client.id); }}
+                        className="text-sm text-danger-600 hover:underline"
+                      >
+                        {labels.delete}
+                      </button>
                     </td>
                   </tr>
                 ))}

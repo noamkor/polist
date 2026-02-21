@@ -70,10 +70,14 @@ export async function generateBackupStream(): Promise<PassThrough> {
     for (const vehicle of client.vehicles) {
       const vehicleDir = `${clientDir}/${categoryLabels.VEHICLE}/${vehicle.licensePlate}`;
       for (const ins of vehicle.insurance) {
+        const yearDir = `${vehicleDir}/${ins.year}`;
+        if (ins.documents.length === 0) {
+          archive.append("", { name: `${yearDir}/` });
+        }
         for (const doc of ins.documents) {
           if (existsSync(doc.storagePath)) {
             archive.append(createReadStream(doc.storagePath), {
-              name: `${vehicleDir}/${ins.year}/${doc.fileName}`,
+              name: `${yearDir}/${doc.fileName}`,
             });
           }
         }
@@ -84,10 +88,14 @@ export async function generateBackupStream(): Promise<PassThrough> {
     for (const home of client.homes) {
       const homeDir = `${clientDir}/${categoryLabels.HOME}/${home.address}`;
       for (const ins of home.insurance) {
+        const yearDir = `${homeDir}/${ins.year}`;
+        if (ins.documents.length === 0) {
+          archive.append("", { name: `${yearDir}/` });
+        }
         for (const doc of ins.documents) {
           if (existsSync(doc.storagePath)) {
             archive.append(createReadStream(doc.storagePath), {
-              name: `${homeDir}/${ins.year}/${doc.fileName}`,
+              name: `${yearDir}/${doc.fileName}`,
             });
           }
         }
@@ -98,10 +106,14 @@ export async function generateBackupStream(): Promise<PassThrough> {
     for (const biz of client.businesses) {
       const bizDir = `${clientDir}/${categoryLabels.BUSINESS}/${biz.businessName}`;
       for (const ins of biz.insurance) {
+        const yearDir = `${bizDir}/${ins.year}`;
+        if (ins.documents.length === 0) {
+          archive.append("", { name: `${yearDir}/` });
+        }
         for (const doc of ins.documents) {
           if (existsSync(doc.storagePath)) {
             archive.append(createReadStream(doc.storagePath), {
-              name: `${bizDir}/${ins.year}/${doc.fileName}`,
+              name: `${yearDir}/${doc.fileName}`,
             });
           }
         }
@@ -112,10 +124,14 @@ export async function generateBackupStream(): Promise<PassThrough> {
     for (const policy of client.healthPolicies) {
       const healthDir = `${clientDir}/${categoryLabels.HEALTH}/${policy.policyName}`;
       for (const ins of policy.insurance) {
+        const yearDir = `${healthDir}/${ins.year}`;
+        if (ins.documents.length === 0) {
+          archive.append("", { name: `${yearDir}/` });
+        }
         for (const doc of ins.documents) {
           if (existsSync(doc.storagePath)) {
             archive.append(createReadStream(doc.storagePath), {
-              name: `${healthDir}/${ins.year}/${doc.fileName}`,
+              name: `${yearDir}/${doc.fileName}`,
             });
           }
         }
@@ -126,10 +142,14 @@ export async function generateBackupStream(): Promise<PassThrough> {
     for (const policy of client.pensionPolicies) {
       const pensionDir = `${clientDir}/${categoryLabels.PENSION}/${policy.policyName}`;
       for (const ins of policy.insurance) {
+        const yearDir = `${pensionDir}/${ins.year}`;
+        if (ins.documents.length === 0) {
+          archive.append("", { name: `${yearDir}/` });
+        }
         for (const doc of ins.documents) {
           if (existsSync(doc.storagePath)) {
             archive.append(createReadStream(doc.storagePath), {
-              name: `${pensionDir}/${ins.year}/${doc.fileName}`,
+              name: `${yearDir}/${doc.fileName}`,
             });
           }
         }
