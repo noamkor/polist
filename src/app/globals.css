@@ -80,6 +80,12 @@
   --color-warning-500: #f59e0b;
   --color-warning-600: #d97706;
 
+  /* Lighter shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.025);
+  --shadow-md: 0 2px 4px -1px rgb(0 0 0 / 0.03), 0 1px 2px -1px rgb(0 0 0 / 0.03);
+  --shadow-lg: 0 4px 6px -1px rgb(0 0 0 / 0.04), 0 2px 4px -2px rgb(0 0 0 / 0.04);
+  --shadow-xl: 0 8px 12px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.04);
+
   /* Semantic colors (adapt to dark mode via CSS vars) */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -102,6 +108,15 @@ a,
 select,
 summary {
   cursor: pointer;
+}
+
+/* Not-allowed cursor for disabled interactive elements */
+button:disabled,
+select:disabled,
+input:disabled,
+textarea:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed !important;
 }
 
 /* LTR inputs for numbers, emails, phone */

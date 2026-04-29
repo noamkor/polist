@@ -10,7 +10,6 @@ datasource db {
 enum Gender {
   MALE
   FEMALE
-  OTHER
 }
 
 enum FamilyRelationType {
@@ -256,10 +255,24 @@ model PensionInsurance {
   @@index([pensionPolicyId])
 }
 
+model Template {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  storagePath String
+  fields      Json     @default("[]")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([name])
+}
+
 model Document {
   id              String            @id @default(cuid())
   fileName        String
   storagePath     String
+  originalStoragePath String?       // Backup of pre-edit PDF, set on first edit
+  editBoxes       Json?             // Saved text boxes / X marks for re-editing
   mimeType        String
   fileSize        Int
   category        InsuranceCategory?

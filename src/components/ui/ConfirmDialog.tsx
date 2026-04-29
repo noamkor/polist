@@ -22,7 +22,7 @@ export function ConfirmDialog({
   loading,
 }: ConfirmDialogProps) {
   return (
-    <Modal open={open} onClose={onClose} title={title}>
+    <Modal open={open} onClose={onClose} title={title} closeOnBackdropClick>
       <p className="text-muted-foreground mb-6">{message}</p>
       <div className="flex gap-3 justify-start">
         <Button variant="secondary" onClick={onClose} disabled={loading}>

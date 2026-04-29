@@ -7,6 +7,7 @@ import { Modal } from "@/components/ui/Modal";
 import { CardListSkeleton } from "@/components/ui/Skeleton";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useToast } from "@/components/ui/Toast";
+import { TrashIcon, PencilIcon } from "@/components/ui/icons";
 import { DocumentUploadPanel } from "./DocumentUploadPanel";
 import { labels } from "@/lib/utils/hebrew";
 import { formatDate } from "@/lib/utils/dates";
@@ -244,16 +245,20 @@ export function InsuranceYearRecords({ apiUrl, clientId, assetId, insuranceType,
                     <Button
                       variant="ghost"
                       size="sm"
+                      title={labels.edit}
+                      aria-label={labels.edit}
                       onClick={() => openEdit(record)}
                     >
-                      <span className="text-primary-600">{labels.edit}</span>
+                      <span className="text-primary-600"><PencilIcon size={16} /></span>
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
+                      title={labels.delete}
+                      aria-label={labels.delete}
                       onClick={() => setDeleteRecordId(record.id)}
                     >
-                      <span className="text-danger-600">{labels.delete}</span>
+                      <span className="text-danger-600"><TrashIcon size={16} /></span>
                     </Button>
                   </div>
 

@@ -149,39 +149,59 @@ export function ClientListWrapper() {
                     <td className="px-4 py-3">
                       <div className="flex gap-1">
                         {client._count.vehicles > 0 && (
-                          <span className="px-3 py-0.5 text-sm rounded-full bg-foreground/10 text-muted-foreground">
+                          <span className="px-3 py-0.5 text-sm rounded-full bg-[#f8fafc] dark:bg-foreground/10 text-muted-foreground">
                             {categoryLabels.VEHICLE} ({client._count.vehicles})
                           </span>
                         )}
                         {client._count.homes > 0 && (
-                          <span className="px-3 py-0.5 text-sm rounded-full bg-foreground/10 text-muted-foreground">
+                          <span className="px-3 py-0.5 text-sm rounded-full bg-[#f8fafc] dark:bg-foreground/10 text-muted-foreground">
                             {categoryLabels.HOME} ({client._count.homes})
                           </span>
                         )}
                         {client._count.businesses > 0 && (
-                          <span className="px-3 py-0.5 text-sm rounded-full bg-foreground/10 text-muted-foreground">
+                          <span className="px-3 py-0.5 text-sm rounded-full bg-[#f8fafc] dark:bg-foreground/10 text-muted-foreground">
                             {categoryLabels.BUSINESS} ({client._count.businesses})
                           </span>
                         )}
                         {client._count.healthPolicies > 0 && (
-                          <span className="px-3 py-0.5 text-sm rounded-full bg-foreground/10 text-muted-foreground">
+                          <span className="px-3 py-0.5 text-sm rounded-full bg-[#f8fafc] dark:bg-foreground/10 text-muted-foreground">
                             {categoryLabels.HEALTH} ({client._count.healthPolicies})
                           </span>
                         )}
                         {client._count.pensionPolicies > 0 && (
-                          <span className="px-3 py-0.5 text-sm rounded-full bg-foreground/10 text-muted-foreground">
+                          <span className="px-3 py-0.5 text-sm rounded-full bg-[#f8fafc] dark:bg-foreground/10 text-muted-foreground">
                             {categoryLabels.PENSION} ({client._count.pensionPolicies})
                           </span>
                         )}
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <button
-                        onClick={(e) => { e.stopPropagation(); setDeleteId(client.id); }}
-                        className="text-sm text-danger-600 hover:underline"
-                      >
-                        {labels.delete}
-                      </button>
+                      <div className="flex gap-1">
+                        <Link
+                          href={`/clients/${client.id}/edit`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="p-2 rounded-md text-primary-600 hover:bg-accent transition-colors"
+                          title={labels.edit}
+                          aria-label={labels.edit}
+                        >
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+                          </svg>
+                        </Link>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setDeleteId(client.id); }}
+                          className="p-2 rounded-md text-danger-600 hover:bg-accent transition-colors"
+                          title={labels.delete}
+                          aria-label={labels.delete}
+                        >
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
+                            <path d="M10 11v6M14 11v6" />
+                            <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" />
+                          </svg>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

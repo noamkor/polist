@@ -7,6 +7,12 @@ import { Modal } from "@/components/ui/Modal";
 import { CardListSkeleton } from "@/components/ui/Skeleton";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useToast } from "@/components/ui/Toast";
+import { TrashIcon, PencilIcon } from "@/components/ui/icons";
+import { Autocomplete } from "@/components/ui/Autocomplete";
+import { CAR_MANUFACTURERS, CAR_MODELS_BY_MANUFACTURER } from "@/lib/utils/car-data";
+
+const CURRENT_YEAR = new Date().getFullYear();
+const VEHICLE_YEARS = Array.from({ length: 40 }, (_, i) => String(CURRENT_YEAR - i));
 import { InsuranceYearRecords } from "./InsuranceYearRecords";
 import { labels } from "@/lib/utils/hebrew";
 
@@ -175,16 +181,20 @@ export function VehicleManager({ clientId }: { clientId: string }) {
                   <Button
                     variant="ghost"
                     size="sm"
+                    title={labels.edit}
+                    aria-label={labels.edit}
                     onClick={(e) => { e.stopPropagation(); openEdit(vehicle); }}
                   >
-                    <span className="text-primary-600">{labels.edit}</span>
+                    <span className="text-primary-600"><PencilIcon size={16} /></span>
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
+                    title={labels.delete}
+                    aria-label={labels.delete}
                     onClick={(e) => { e.stopPropagation(); setDeleteId(vehicle.id); }}
                   >
-                    <span className="text-danger-600">{labels.delete}</span>
+                    <span className="text-danger-600"><TrashIcon size={16} /></span>
                   </Button>
                   <svg
                     className={`w-5 h-5 transition-transform ${expandedId === vehicle.id ? "rotate-180" : ""}`}
@@ -222,24 +232,24 @@ export function VehicleManager({ clientId }: { clientId: string }) {
             dir="ltr"
           />
           <div className="grid grid-cols-2 gap-4">
-            <Input
+            <Autocomplete
               label={labels.manufacturer}
               value={form.manufacturer}
-              onChange={(e) => setForm((f) => ({ ...f, manufacturer: e.target.value }))}
+              onChange={(v) => setForm((f) => ({ ...f, manufacturer: v, model: "" }))}
+              options={CAR_MANUFACTURERS}
             />
-            <Input
+            <Autocomplete
               label={labels.model}
               value={form.model}
-              onChange={(e) => setForm((f) => ({ ...f, model: e.target.value }))}
+              onChange={(v) => setForm((f) => ({ ...f, model: v }))}
+              options={CAR_MODELS_BY_MANUFACTURER[form.manufacturer] ?? []}
             />
           </div>
-          <Input
+          <Autocomplete
             label={labels.vehicleYear}
             value={form.year}
-            onChange={(e) => {
-              const val = e.target.value.replace(/[^0-9]/g, "");
-              setForm((f) => ({ ...f, year: val }));
-            }}
+            onChange={(v) => setForm((f) => ({ ...f, year: v.replace(/[^0-9]/g, "") }))}
+            options={VEHICLE_YEARS}
             dir="ltr"
           />
           <div className="flex gap-3 justify-start">
@@ -262,24 +272,24 @@ export function VehicleManager({ clientId }: { clientId: string }) {
             dir="ltr"
           />
           <div className="grid grid-cols-2 gap-4">
-            <Input
+            <Autocomplete
               label={labels.manufacturer}
               value={editForm.manufacturer}
-              onChange={(e) => setEditForm((f) => ({ ...f, manufacturer: e.target.value }))}
+              onChange={(v) => setEditForm((f) => ({ ...f, manufacturer: v, model: "" }))}
+              options={CAR_MANUFACTURERS}
             />
-            <Input
+            <Autocomplete
               label={labels.model}
               value={editForm.model}
-              onChange={(e) => setEditForm((f) => ({ ...f, model: e.target.value }))}
+              onChange={(v) => setEditForm((f) => ({ ...f, model: v }))}
+              options={CAR_MODELS_BY_MANUFACTURER[editForm.manufacturer] ?? []}
             />
           </div>
-          <Input
+          <Autocomplete
             label={labels.vehicleYear}
             value={editForm.year}
-            onChange={(e) => {
-              const val = e.target.value.replace(/[^0-9]/g, "");
-              setEditForm((f) => ({ ...f, year: val }));
-            }}
+            onChange={(v) => setEditForm((f) => ({ ...f, year: v.replace(/[^0-9]/g, "") }))}
+            options={VEHICLE_YEARS}
             dir="ltr"
           />
           <div className="flex gap-3 justify-start">

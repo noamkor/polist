@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { DocumentsSkeleton } from "@/components/ui/Skeleton";
 import { useToast } from "@/components/ui/Toast";
+import { TrashIcon } from "@/components/ui/icons";
 import { labels } from "@/lib/utils/hebrew";
 
 interface Document {
@@ -14,6 +15,7 @@ interface Document {
   mimeType: string;
   fileSize: number;
   personalDocType: string | null;
+  updatedAt: string;
 }
 
 interface Props {
@@ -28,10 +30,12 @@ function formatFileSize(bytes: number) {
 
 function DocumentRow({
   doc,
+  clientId,
   onDelete,
   onReplace,
 }: {
   doc: Document;
+  clientId: string;
   onDelete: (id: string) => void;
   onReplace?: () => void;
 }) {
@@ -51,7 +55,7 @@ function DocumentRow({
           </button>
         )}
         <a
-          href={`/api/documents/${doc.id}/preview`}
+          href={`/api/documents/${doc.id}/preview?t=${new Date(doc.updatedAt).getTime()}`}
           target="_blank"
           rel="noopener noreferrer"
           className="text-sm text-primary-600 hover:underline px-2 py-1"
@@ -59,17 +63,27 @@ function DocumentRow({
           {labels.preview}
         </a>
         <a
-          href={`/api/documents/${doc.id}`}
+          href={`/api/documents/${doc.id}?t=${new Date(doc.updatedAt).getTime()}`}
           download
           className="text-sm text-primary-600 hover:underline px-2 py-1"
         >
           {labels.download}
         </a>
+        {doc.mimeType === "application/pdf" && (
+          <a
+            href={`/pdf-editor?documentId=${doc.id}&redirect=/clients/${clientId}&t=${new Date(doc.updatedAt).getTime()}`}
+            className="text-sm text-primary-600 hover:underline px-2 py-1"
+          >
+            {labels.editPdf}
+          </a>
+        )}
         <button
           onClick={() => onDelete(doc.id)}
-          className="text-sm text-danger-600 hover:underline px-2 py-1"
+          title={labels.delete}
+          aria-label={labels.delete}
+          className="text-danger-600 hover:bg-accent rounded-md p-1.5 transition-colors"
         >
-          {labels.delete}
+          <TrashIcon size={16} />
         </button>
       </div>
     </div>
@@ -79,12 +93,14 @@ function DocumentRow({
 function SingleFileSlot({
   label,
   doc,
+  clientId,
   onUpload,
   onDelete,
   uploading,
 }: {
   label: string;
   doc: Document | null;
+  clientId: string;
   onUpload: (file: File) => void;
   onDelete: (id: string) => void;
   uploading: boolean;
@@ -106,15 +122,15 @@ function SingleFileSlot({
       onDragLeave={() => setDragOver(false)}
       onDrop={handleDrop}
     >
-      <h4 className="text-sm font-bold text-foreground mb-2 -mx-4 -mt-4 px-4 py-2 rounded-t-lg bg-foreground/5">{label}</h4>
+      <h4 className="text-sm font-bold text-foreground mb-2 -mx-4 -mt-4 px-4 py-2 rounded-t-lg bg-[#f8fafc] dark:bg-foreground/5">{label}</h4>
       {doc ? (
-        <DocumentRow doc={doc} onDelete={onDelete} onReplace={() => inputRef.current?.click()} />
+        <DocumentRow doc={doc} clientId={clientId} onDelete={onDelete} onReplace={() => inputRef.current?.click()} />
       ) : (
         <div
           onClick={() => inputRef.current?.click()}
           className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
             dragOver
-              ? "border-primary-500 bg-primary-500/10"
+              ? "border-primary-500 bg-[#f8fafc]"
               : "border-input-border hover:border-primary-400 hover:bg-accent"
           }`}
         >
@@ -240,6 +256,7 @@ export function PersonalDocuments({ clientId }: Props) {
         <SingleFileSlot
           label={labels.idDocument}
           doc={idDoc}
+          clientId={clientId}
           onUpload={handleUploadId}
           onDelete={setDeleteId}
           uploading={uploadingId}
@@ -247,6 +264,7 @@ export function PersonalDocuments({ clientId }: Props) {
         <SingleFileSlot
           label={labels.driverLicense}
           doc={licenseDoc}
+          clientId={clientId}
           onUpload={handleUploadLicense}
           onDelete={setDeleteId}
           uploading={uploadingLicense}
@@ -255,12 +273,12 @@ export function PersonalDocuments({ clientId }: Props) {
 
       {/* Other personal documents - unlimited */}
       <div className="border border-border rounded-lg p-4">
-        <h4 className="text-sm font-bold text-foreground mb-2 -mx-4 -mt-4 px-4 py-2 rounded-t-lg bg-foreground/5">{labels.otherDocuments}</h4>
+        <h4 className="text-sm font-bold text-foreground mb-2 -mx-4 -mt-4 px-4 py-2 rounded-t-lg bg-[#f8fafc] dark:bg-foreground/5">{labels.otherDocuments}</h4>
 
         {otherDocs.length > 0 && (
           <div className="space-y-2 mb-4">
             {otherDocs.map((doc) => (
-              <DocumentRow key={doc.id} doc={doc} onDelete={setDeleteId} />
+              <DocumentRow key={doc.id} doc={doc} clientId={clientId} onDelete={setDeleteId} />
             ))}
           </div>
         )}

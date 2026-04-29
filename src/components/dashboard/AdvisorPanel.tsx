@@ -87,7 +87,7 @@ export function AdvisorPanel({
         <div className="space-y-1.5">
           {uninsuredAssets.map((a, i) => (
             <Link key={i} href={`/clients/${a.clientId}/${categoryRoute[a.category]}`} className="text-sm flex items-center gap-2 hover:bg-accent rounded px-1 py-0.5 -mx-1 transition-colors">
-              <span className="px-2 py-0.5 rounded-full bg-foreground/10 text-muted-foreground">
+              <span className="px-2 py-0.5 rounded-full bg-[#f8fafc] dark:bg-foreground/10 text-muted-foreground">
                 {categoryLabels[a.category]}
               </span>
               <span>{a.assetLabel}</span>
@@ -108,7 +108,7 @@ export function AdvisorPanel({
         <div className="space-y-1.5">
           {missingDatesRecords.map((r, i) => (
             <Link key={i} href={`/clients/${r.clientId}/${categoryRoute[r.category]}`} className="text-sm flex items-center gap-2 hover:bg-accent rounded px-1 py-0.5 -mx-1 transition-colors">
-              <span className="px-2 py-0.5 rounded-full bg-foreground/10 text-muted-foreground">
+              <span className="px-2 py-0.5 rounded-full bg-[#f8fafc] dark:bg-foreground/10 text-muted-foreground">
                 {categoryLabels[r.category]}
               </span>
               <span>{r.assetLabel}</span>
@@ -209,7 +209,7 @@ export function AdvisorPanel({
                 <span className="font-medium">{insight.title}</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm bg-foreground/10 px-2 py-0.5 rounded-full">
+                <span className="text-sm bg-[#f8fafc] dark:bg-foreground/10 text-muted-foreground px-2 py-0.5 rounded-full">
                   {insight.count}
                 </span>
                 <svg

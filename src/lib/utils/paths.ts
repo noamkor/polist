@@ -33,3 +33,7 @@ export function getHealthDir(clientId: string, policyId: string, year: number): 
 export function getPensionDir(clientId: string, policyId: string, year: number): string {
   return path.join(getClientDir(clientId), "pension", policyId, String(year));
 }
+
+export function getTemplateDir(templateId: string): string {
+  return path.join(getUploadsDir(), "templates", templateId);
+}

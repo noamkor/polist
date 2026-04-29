@@ -264,7 +264,7 @@ export function ExpiringInsurances({ items, currentMonth, nextMonth, currentMont
                       </Link>
                     </td>
                     <td className="py-3">
-                      <span className="inline-block w-16 text-center px-3 py-0.5 text-sm rounded-full bg-foreground/10 text-muted-foreground">
+                      <span className="inline-block w-16 text-center px-3 py-0.5 text-sm rounded-full bg-[#f8fafc] dark:bg-foreground/10 text-muted-foreground">
                         {categoryLabels[ins.category]}
                       </span>
                     </td>

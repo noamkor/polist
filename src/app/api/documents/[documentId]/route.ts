@@ -44,6 +44,9 @@ export async function DELETE(
   if (!doc) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   await deleteFile(doc.storagePath);
+  if (doc.originalStoragePath) {
+    await deleteFile(doc.originalStoragePath);
+  }
   await prisma.document.delete({ where: { id: documentId } });
 
   return NextResponse.json({ success: true });

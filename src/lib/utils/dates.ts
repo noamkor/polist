@@ -33,3 +33,16 @@ export function toInputDate(date: Date | string | null | undefined): string {
 export function currentYear(): number {
   return new Date().getFullYear();
 }
+
+export function calculateAge(birthDate: Date | string | null | undefined): number | null {
+  if (!birthDate) return null;
+  const birth = typeof birthDate === "string" ? new Date(birthDate) : birthDate;
+  if (Number.isNaN(birth.getTime())) return null;
+  const today = new Date();
+  let age = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    age--;
+  }
+  return age;
+}

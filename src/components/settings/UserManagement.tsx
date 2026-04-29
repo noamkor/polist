@@ -7,6 +7,7 @@ import { Select } from "@/components/ui/Select";
 import { Modal } from "@/components/ui/Modal";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useToast } from "@/components/ui/Toast";
+import { TrashIcon } from "@/components/ui/icons";
 import { labels, roleLabels } from "@/lib/utils/hebrew";
 
 interface User {
@@ -108,7 +109,7 @@ export function UserManagement({ initialUsers }: Props) {
               <td className="py-2">{user.username}</td>
               <td className="py-2">{user.name}</td>
               <td className="py-2">
-                <span className="px-3 py-0.5 text-sm rounded-full bg-foreground/10 text-muted-foreground">
+                <span className="px-3 py-0.5 text-sm rounded-full bg-[#f8fafc] dark:bg-foreground/10 text-muted-foreground">
                   {roleLabels[user.role] || user.role}
                 </span>
               </td>
@@ -116,9 +117,11 @@ export function UserManagement({ initialUsers }: Props) {
                 <Button
                   variant="ghost"
                   size="sm"
+                  title={labels.delete}
+                  aria-label={labels.delete}
                   onClick={() => setDeleteId(user.id)}
                 >
-                  <span className="text-danger-600">{labels.delete}</span>
+                  <span className="text-danger-600"><TrashIcon size={16} /></span>
                 </Button>
               </td>
             </tr>

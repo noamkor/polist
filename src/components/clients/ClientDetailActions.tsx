@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useToast } from "@/components/ui/Toast";
+import { TrashIcon, PencilIcon } from "@/components/ui/icons";
 import { labels } from "@/lib/utils/hebrew";
 
 export function ClientDetailActions({ clientId }: { clientId: string }) {
@@ -31,10 +32,12 @@ export function ClientDetailActions({ clientId }: { clientId: string }) {
     <>
       <div className="flex gap-2">
         <Link href={`/clients/${clientId}/edit`}>
-          <Button variant="secondary">{labels.edit}</Button>
+          <Button variant="secondary" title={labels.edit} aria-label={labels.edit}>
+            <PencilIcon size={16} />
+          </Button>
         </Link>
-        <Button variant="danger" onClick={() => setShowDelete(true)}>
-          {labels.delete}
+        <Button variant="danger" title={labels.delete} aria-label={labels.delete} onClick={() => setShowDelete(true)}>
+          <TrashIcon size={16} />
         </Button>
       </div>
       <ConfirmDialog

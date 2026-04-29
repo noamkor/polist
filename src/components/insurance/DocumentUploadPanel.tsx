@@ -5,6 +5,7 @@ import { FileUpload } from "@/components/ui/FileUpload";
 import { Button } from "@/components/ui/Button";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useToast } from "@/components/ui/Toast";
+import { TrashIcon } from "@/components/ui/icons";
 import { labels } from "@/lib/utils/hebrew";
 
 interface Document {
@@ -12,6 +13,7 @@ interface Document {
   fileName: string;
   mimeType: string;
   fileSize: number;
+  updatedAt?: string;
 }
 
 interface Props {
@@ -111,7 +113,7 @@ export function DocumentUploadPanel({
               </div>
               <div className="flex gap-1">
                 <a
-                  href={`/api/documents/${doc.id}/preview`}
+                  href={`/api/documents/${doc.id}/preview?t=${doc.updatedAt ? new Date(doc.updatedAt).getTime() : 0}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-primary-600 hover:underline px-2 py-1"
@@ -119,17 +121,27 @@ export function DocumentUploadPanel({
                   {labels.preview}
                 </a>
                 <a
-                  href={`/api/documents/${doc.id}`}
+                  href={`/api/documents/${doc.id}?t=${doc.updatedAt ? new Date(doc.updatedAt).getTime() : 0}`}
                   download
                   className="text-sm text-primary-600 hover:underline px-2 py-1"
                 >
                   {labels.download}
                 </a>
+                {doc.mimeType === "application/pdf" && (
+                  <a
+                    href={`/pdf-editor?documentId=${doc.id}&redirect=/clients/${clientId}&t=${doc.updatedAt ? new Date(doc.updatedAt).getTime() : 0}`}
+                    className="text-sm text-primary-600 hover:underline px-2 py-1"
+                  >
+                    {labels.editPdf}
+                  </a>
+                )}
                 <button
                   onClick={() => setDeleteId(doc.id)}
-                  className="text-sm text-danger-600 hover:underline px-2 py-1"
+                  title={labels.delete}
+                  aria-label={labels.delete}
+                  className="text-danger-600 hover:bg-accent rounded-md p-1.5 transition-colors"
                 >
-                  {labels.delete}
+                  <TrashIcon size={16} />
                 </button>
               </div>
             </div>

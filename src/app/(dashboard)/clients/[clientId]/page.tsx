@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { verifySession } from "@/lib/dal";
 import { labels, categoryLabels, genderLabels, relationLabels } from "@/lib/utils/hebrew";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
-import { formatDate } from "@/lib/utils/dates";
+import { formatDate, calculateAge } from "@/lib/utils/dates";
 import { buildFamilyRelations } from "@/lib/family-relations";
 import { ClientDetailActions } from "@/components/clients/ClientDetailActions";
 import { PersonalDocuments } from "@/components/clients/PersonalDocuments";
@@ -74,7 +74,7 @@ export default async function ClientDetailPage({
                   ? "bg-green-500/15 text-green-600"
                   : client.gender === "FEMALE"
                     ? "bg-pink-500/15 text-pink-600"
-                    : "bg-foreground/10 text-muted-foreground"
+                    : "bg-[#f8fafc] dark:bg-foreground/10 text-muted-foreground"
               }`}
             >
               {genderLabels[client.gender]}
@@ -102,7 +102,15 @@ export default async function ClientDetailPage({
           {client.dateOfBirth && (
             <div>
               <p className="text-sm text-muted-foreground">{labels.dateOfBirth}</p>
-              <p>{formatDate(client.dateOfBirth)}</p>
+              <p>
+                {formatDate(client.dateOfBirth)}
+                {(() => {
+                  const age = calculateAge(client.dateOfBirth);
+                  return age !== null ? (
+                    <span className="text-muted-foreground"> ({labels.age} {age})</span>
+                  ) : null;
+                })()}
+              </p>
             </div>
           )}
           {client.address && (
@@ -143,7 +151,7 @@ export default async function ClientDetailPage({
               <span className={`w-7 h-7 rounded-full text-sm font-medium inline-flex items-center justify-center ${
                 section.count > 0
                   ? "bg-primary-500/15 text-primary-600"
-                  : "bg-foreground/10 text-muted-foreground"
+                  : "bg-[#f8fafc] dark:bg-foreground/10 text-muted-foreground"
               }`}>
                 {section.count}
               </span>
@@ -164,7 +172,7 @@ export default async function ClientDetailPage({
           <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 items-center">
             {familyRelations.map((rel) => (
               <div key={rel.id} className="contents">
-                <span className="inline-block w-24 text-center px-3 py-0.5 text-sm rounded-full bg-foreground/10 text-muted-foreground">
+                <span className="inline-block w-24 text-center px-3 py-0.5 text-sm rounded-full bg-[#f8fafc] dark:bg-foreground/10 text-muted-foreground">
                   {relationLabels[rel.relationType]}
                 </span>
                 <Link

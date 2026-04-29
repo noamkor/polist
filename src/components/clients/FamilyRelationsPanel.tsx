@@ -9,6 +9,7 @@ import { Modal } from "@/components/ui/Modal";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { TableSkeleton } from "@/components/ui/Skeleton";
 import { useToast } from "@/components/ui/Toast";
+import { TrashIcon } from "@/components/ui/icons";
 import { labels, relationLabels } from "@/lib/utils/hebrew";
 import { buildFamilyRelations, FamilyRelationView } from "@/lib/family-relations";
 
@@ -144,13 +145,13 @@ export function FamilyRelationsPanel({ clientId }: Props) {
                     </Link>
                   </td>
                   <td className="px-4 py-3">
-                    <span className="px-3 py-0.5 text-sm rounded-full bg-foreground/10 text-muted-foreground">
+                    <span className="px-3 py-0.5 text-sm rounded-full bg-[#f8fafc] dark:bg-foreground/10 text-muted-foreground">
                       {relationLabels[rel.relationType]}
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <Button variant="ghost" size="sm" onClick={() => setDeleteId(rel.id)}>
-                      <span className="text-danger-600">{labels.delete}</span>
+                    <Button variant="ghost" size="sm" title={labels.delete} aria-label={labels.delete} onClick={() => setDeleteId(rel.id)}>
+                      <span className="text-danger-600"><TrashIcon size={16} /></span>
                     </Button>
                   </td>
                 </tr>

@@ -8,9 +8,17 @@ interface ModalProps {
   title: string;
   children: ReactNode;
   maxWidth?: string;
+  closeOnBackdropClick?: boolean;
 }
 
-export function Modal({ open, onClose, title, children, maxWidth = "max-w-lg" }: ModalProps) {
+export function Modal({
+  open,
+  onClose,
+  title,
+  children,
+  maxWidth = "max-w-lg",
+  closeOnBackdropClick = false,
+}: ModalProps) {
   useEffect(() => {
     if (open) {
       document.body.style.overflow = "hidden";
@@ -36,8 +44,8 @@ export function Modal({ open, onClose, title, children, maxWidth = "max-w-lg" }:
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={onClose}
+        className="absolute inset-0 bg-black/50"
+        onClick={closeOnBackdropClick ? onClose : undefined}
       />
       <div className={`${maxWidth} w-full rounded-xl bg-card text-card-foreground shadow-xl relative z-10 mx-4`}>
         <div className="p-6" dir="rtl">

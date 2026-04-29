@@ -10,7 +10,7 @@ export const clientSchema = z.object({
   firstName: z.string().min(1, "שם פרטי הוא שדה חובה"),
   lastName: z.string().min(1, "שם משפחה הוא שדה חובה"),
   idNumber: z.string().nullable().optional().or(z.literal("")),
-  gender: z.enum(["MALE", "FEMALE", "OTHER"]).nullable().optional(),
+  gender: z.enum(["MALE", "FEMALE"]).nullable().optional(),
   email: z.string().email("כתובת דוא\"ל לא תקינה").nullable().optional().or(z.literal("")),
   dateOfBirth: z.string().nullable().optional().or(z.literal("")),
   address: z.string().nullable().optional(),

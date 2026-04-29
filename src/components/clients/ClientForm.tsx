@@ -33,7 +33,6 @@ interface ClientFormProps {
 const genderOptions = [
   { value: "MALE", label: labels.male },
   { value: "FEMALE", label: labels.female },
-  { value: "OTHER", label: labels.other },
 ];
 
 const phoneLabelOptions = [

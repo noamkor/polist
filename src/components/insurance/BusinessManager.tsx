@@ -7,6 +7,7 @@ import { Modal } from "@/components/ui/Modal";
 import { CardListSkeleton } from "@/components/ui/Skeleton";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useToast } from "@/components/ui/Toast";
+import { TrashIcon } from "@/components/ui/icons";
 import { InsuranceYearRecords } from "./InsuranceYearRecords";
 import { labels } from "@/lib/utils/hebrew";
 
@@ -91,8 +92,8 @@ export function BusinessManager({ clientId }: { clientId: string }) {
                   {biz.address && <span className="text-sm text-secondary-foreground">{biz.address}</span>}
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); setDeleteId(biz.id); }}>
-                    <span className="text-danger-600">{labels.delete}</span>
+                  <Button variant="ghost" size="sm" title={labels.delete} aria-label={labels.delete} onClick={(e) => { e.stopPropagation(); setDeleteId(biz.id); }}>
+                    <span className="text-danger-600"><TrashIcon size={16} /></span>
                   </Button>
                   <svg className={`w-5 h-5 transition-transform ${expandedId === biz.id ? "rotate-180" : ""}`}
                     fill="none" viewBox="0 0 24 24" stroke="currentColor">

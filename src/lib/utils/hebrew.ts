@@ -6,6 +6,51 @@ export const labels = {
   logout: "יציאה",
   settings: "הגדרות",
   backup: "גיבוי",
+  pdfEditor: "עורך PDF",
+  templates: "תבניות",
+  newTemplate: "תבנית חדשה",
+  templateName: "שם התבנית",
+  templateDescription: "תיאור (אופציונלי)",
+  fillTemplate: "מילוי",
+  fieldLabel: "תווית שדה",
+  addField: "הוסף שדה",
+  fieldName: "שם השדה",
+  fieldsCount: "מספר שדות",
+  templateNoFields: "אין שדות בתבנית",
+  generatePdf: "צור PDF",
+  saveAndAttach: "שמור וצרף ללקוח",
+  attachToClient: "צרף ללקוח",
+  selectClient: "בחר לקוח",
+
+  // PDF Editor
+  pdfEditorTitle: "עורך PDF",
+  pdfEditorDescription: "מילוי טקסט בעברית בקבצי PDF",
+  uploadPdf: "העלאת PDF",
+  selectPdfFile: "בחר קובץ PDF",
+  addText: "הוסף טקסט",
+  fontSize: "גודל גופן",
+  bold: "מודגש",
+  xMark: "סמן X",
+  textMode: "טקסט",
+  size: "גודל",
+  color: "צבע",
+  saveAsNew: "שמור כקובץ חדש",
+  replaceOriginal: "החלף את המקור",
+  downloadPdf: "הורד PDF",
+  editPdf: "עריכה",
+  pdfSaved: "הקובץ נשמר בהצלחה",
+  pdfSaveError: "שגיאה בשמירת הקובץ",
+  pdfSavedTitle: "הקובץ נשמר",
+  pdfSavedQuestion: "האם לחזור לכרטיס הלקוח או להמשיך לערוך?",
+  returnToClient: "חזור לכרטיס הלקוח",
+  keepEditing: "המשך לערוך",
+  saveAsTitle: "שמירת קובץ",
+  saveAsLabel: "שם הקובץ",
+  clickToAddText: "לחץ על העמוד כדי להוסיף טקסט",
+  textBoxPlaceholder: "הקלד כאן...",
+  deleteTextBox: "מחיקת תיבה",
+  page: "עמוד",
+  of: "מתוך",
 
   // Common
   save: "שמירה",
@@ -46,6 +91,7 @@ export const labels = {
   gender: "מגדר",
   email: "דוא\"ל",
   dateOfBirth: "תאריך לידה",
+  age: "גיל",
   address: "כתובת",
   notes: "הערות",
   phoneNumbers: "מספרי טלפון",
@@ -63,7 +109,6 @@ export const labels = {
   // Gender
   male: "זכר",
   female: "נקבה",
-  other: "אחר",
 
   // Family
   familyRelations: "קשרי משפחה",
@@ -193,7 +238,6 @@ export const categoryLabels: Record<string, string> = {
 export const genderLabels: Record<string, string> = {
   MALE: "זכר",
   FEMALE: "נקבה",
-  OTHER: "אחר",
 };
 
 export const relationLabels: Record<string, string> = {
