@@ -52,6 +52,11 @@ export const labels = {
   page: "עמוד",
   of: "מתוך",
 
+  // Bindings
+  clientField: "שדה לקוח",
+  noBinding: "ללא קישור",
+  autoFillFromClient: "מילוי אוטומטי מלקוח",
+
   // Common
   save: "שמירה",
   cancel: "ביטול",

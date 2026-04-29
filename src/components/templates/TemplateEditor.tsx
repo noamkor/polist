@@ -12,6 +12,7 @@ import { TextBox, ElementKind } from "@/components/pdf-editor/types";
 import { EditorToolbar } from "@/components/pdf-editor/EditorToolbar";
 import { PdfPage } from "@/components/pdf-editor/PdfPage";
 import type { TemplateField } from "@/lib/template-types";
+import { BINDING_OPTIONS } from "@/lib/template-bindings";
 
 interface Props {
   templateId: string;
@@ -32,6 +33,7 @@ function fieldsToBoxes(fields: TemplateField[]): TextBox[] {
     dir: f.dir,
     kind: f.kind,
     color: f.color,
+    binding: f.binding,
   }));
 }
 
@@ -47,6 +49,7 @@ function boxesToFields(boxes: TextBox[]): TemplateField[] {
     dir: b.dir,
     color: b.color,
     kind: b.kind,
+    binding: b.binding,
   }));
 }
 
@@ -238,7 +241,25 @@ export function TemplateEditor({ templateId, templateName }: Props) {
                       className="flex-1 px-2 py-1 rounded border border-input-border bg-card focus:ring-primary-500 focus:border-primary-500 outline-none focus:ring-1 text-sm"
                     />
                   </div>
-                  <div className="text-[11px] text-muted-foreground ms-7">
+                  <div className="ms-7">
+                    <select
+                      value={b.binding || ""}
+                      onChange={(e) =>
+                        updateTextBox(b.id, { binding: e.target.value || undefined })
+                      }
+                      onClick={(e) => e.stopPropagation()}
+                      className="w-full px-2 py-1 rounded border border-input-border bg-card focus:ring-primary-500 outline-none focus:ring-1 text-xs"
+                      dir="rtl"
+                    >
+                      <option value="">{labels.noBinding}</option>
+                      {BINDING_OPTIONS.map((opt) => (
+                        <option key={opt.key} value={opt.key}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="text-[11px] text-muted-foreground ms-7 mt-1">
                     עמוד {b.pageIndex + 1}
                   </div>
                 </div>

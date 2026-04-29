@@ -1,3 +1,5 @@
+import { isBindingKey } from "./template-bindings";
+
 export interface TemplateField {
   id: string;
   label: string;
@@ -9,6 +11,7 @@ export interface TemplateField {
   dir: "ltr" | "rtl";
   color: string;
   kind: "text" | "x";
+  binding?: string;
 }
 
 export function isValidField(v: unknown): v is TemplateField {
@@ -24,7 +27,8 @@ export function isValidField(v: unknown): v is TemplateField {
     typeof f.bold === "boolean" &&
     (f.dir === "ltr" || f.dir === "rtl") &&
     typeof f.color === "string" &&
-    (f.kind === "text" || f.kind === "x")
+    (f.kind === "text" || f.kind === "x") &&
+    (f.binding === undefined || typeof f.binding === "string")
   );
 }
 
@@ -46,6 +50,7 @@ export function sanitizeFields(input: unknown): TemplateField[] {
         color: typeof o.color === "string" && /^#[0-9a-fA-F]{6}$/.test(o.color) ? o.color : "#000000",
         kind: o.kind === "x" ? "x" : "text",
       };
+      if (isBindingKey(o.binding)) field.binding = o.binding;
       return field;
     })
     .filter((f): f is TemplateField => f !== null);

@@ -11,4 +11,5 @@ export interface TextBox {
   dir: "ltr" | "rtl";
   kind: ElementKind;
   color: string;
+  binding?: string;
 }

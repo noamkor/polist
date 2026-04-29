@@ -5,13 +5,25 @@ import type { PDFiumDocument } from "@hyzyla/pdfium";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
 import { Modal } from "@/components/ui/Modal";
+import { Autocomplete } from "@/components/ui/Autocomplete";
 import { useToast } from "@/components/ui/Toast";
 import { getPdfiumLibrary } from "@/lib/pdfium-loader";
 import { labels } from "@/lib/utils/hebrew";
 import { sanitizeFileNameInput } from "@/lib/utils/file-name";
 import type { TemplateField } from "@/lib/template-types";
+import {
+  isBindingKey,
+  resolveBinding,
+  type ClientForBinding,
+} from "@/lib/template-bindings";
 import { TemplatePreviewPage } from "./TemplatePreviewPage";
 import { AttachToClientDialog } from "./AttachToClientDialog";
+
+interface ClientLite {
+  id: string;
+  firstName: string;
+  lastName: string;
+}
 
 interface Props {
   templateId: string;
@@ -31,7 +43,12 @@ export function TemplateFiller({ templateId, templateName }: Props) {
   const [showAttach, setShowAttach] = useState(false);
   const [showSaveAs, setShowSaveAs] = useState(false);
   const [saveAsName, setSaveAsName] = useState("");
+  const [clientList, setClientList] = useState<ClientLite[]>([]);
+  const [clientSearch, setClientSearch] = useState("");
+  const [autofilling, setAutofilling] = useState(false);
   const docRef = useRef<PDFiumDocument | null>(null);
+  const fieldsRef = useRef<TemplateField[]>([]);
+  fieldsRef.current = fields;
 
   useEffect(() => {
     return () => {
@@ -72,6 +89,46 @@ export function TemplateFiller({ templateId, templateName }: Props) {
   useEffect(() => {
     loadAll();
   }, [loadAll]);
+
+  useEffect(() => {
+    fetch("/api/clients?limit=500")
+      .then((r) => r.json())
+      .then((data) => {
+        const list = data.clients || data;
+        setClientList(Array.isArray(list) ? list : []);
+      })
+      .catch(() => setClientList([]));
+  }, []);
+
+  const hasBoundFields = useMemo(
+    () => fields.some((f) => f.kind === "text" && isBindingKey(f.binding)),
+    [fields]
+  );
+
+  async function pickClient(name: string) {
+    setClientSearch(name);
+    const found = clientList.find((c) => `${c.firstName} ${c.lastName}` === name);
+    if (!found) return;
+    setAutofilling(true);
+    try {
+      const res = await fetch(`/api/clients/${found.id}`);
+      if (!res.ok) throw new Error("Failed to load client");
+      const client = (await res.json()) as ClientForBinding;
+      setValues((prev) => {
+        const next = { ...prev };
+        for (const f of fieldsRef.current) {
+          if (f.kind !== "text" || !isBindingKey(f.binding)) continue;
+          next[f.id] = resolveBinding(f.binding, client);
+        }
+        return next;
+      });
+    } catch (err) {
+      console.error(err);
+      toast("שגיאה בטעינת פרטי הלקוח", "error");
+    } finally {
+      setAutofilling(false);
+    }
+  }
 
   const orderedTextFields = useMemo(() => {
     return fields
@@ -153,6 +210,19 @@ export function TemplateFiller({ templateId, templateName }: Props) {
 
       <div className="flex-1 flex overflow-hidden">
         <aside className="w-80 border-s border-border bg-card overflow-y-auto p-4 space-y-3">
+          {hasBoundFields && (
+            <div className="pb-3 border-b border-border-light">
+              <Autocomplete
+                label={labels.autoFillFromClient}
+                value={clientSearch}
+                onChange={pickClient}
+                options={clientList.map((c) => `${c.firstName} ${c.lastName}`)}
+              />
+              {autofilling && (
+                <p className="text-xs text-muted-foreground mt-1">טוען...</p>
+              )}
+            </div>
+          )}
           {orderedTextFields.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-8">
               {labels.templateNoFields}
